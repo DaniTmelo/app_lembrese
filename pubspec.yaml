@@ -1,0 +1,48 @@
+name: app_lembrese
+description: "A new Flutter project."
+
+# O seguinte impede que o pacote seja publicado acidentalmente no pub.dev
+publish_to: 'none' # Remova esta linha se desejar publicar no pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Adiciona o conjunto de ícones Cupertino para iOS
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Pacote de lints recomendados para boas práticas de código
+  flutter_lints: ^4.0.0
+
+flutter:
+
+  # Garante que a fonte de ícones do Material esteja incluída
+  uses-material-design: true
+
+  # Adiciona os assets (imagens) ao projeto
+  assets:
+    - lib/assets/logo.png  # Caminho para o logo do aplicativo. Ajuste conforme necessário
+    # Você pode adicionar mais imagens conforme necessário
+    # - assets/outra_imagem.png
+
+  # Adiciona fontes personalizadas (caso queira usá-las)
+  # fonts:
+  #   - family: Schyler
+  #     fonts:
+  #       - asset: fonts/Schyler-Regular.ttf
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
