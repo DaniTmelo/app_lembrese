@@ -174,7 +174,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black,
                         ),
                       ),
                     ),
