@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 1, 127, 106), // Nova cor para o app bar
-        title: Center(
-          child: Text(
-            'Sobre o App',
-            style: TextStyle(color: Colors.white),
-          ),
+        backgroundColor:
+            const Color.fromARGB(255, 1, 127, 106), // Cor verde padronizada
+        title: const Text(
+          'Sobre o App',
+          style: TextStyle(color: Colors.white),
         ),
+        centerTitle: true, // Centraliza o título
         automaticallyImplyLeading: false, // Remove o ícone de voltar
       ),
       body: Padding(
@@ -20,93 +22,93 @@ class AboutScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Título
-            Text(
+            const Text(
               'Bem-vindo ao App Lembre-se!',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 1, 127, 106), // Nova cor do título
+                color: Color.fromARGB(255, 1, 127, 106), // Cor verde
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             // Descrição
-            Text(
+            const Text(
               'Este é um aplicativo simples para ajudar você a organizar suas tarefas diárias.',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Informações adicionais
-            Text(
+            const Text(
               'Recursos principais:',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 1, 127, 106), // Nova cor dos subtítulos
+                color: Color.fromARGB(255, 1, 127, 106),
               ),
             ),
-            SizedBox(height: 5),
-            Text(
-              '- Criação e edição de tarefas\n- Definição de horários\n- Modo escuro\n- Notificações de lembretes',
+            const SizedBox(height: 5),
+            const Text(
+              '- Criação e edição de tarefas\n'
+              '- Definição de horários\n'
+              '- Modo escuro\n'
+              '- Notificações de lembretes',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Versão do App
-            Text(
+            const Text(
               'Versão: 1.0.0',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 1, 127, 106), // Nova cor para a versão
+                color: Color.fromARGB(255, 1, 127, 106),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Informações de Contato ou Desenvolvedor
-            Text(
-              'Desenvolvido por: Sua Empresa',
+            const Text(
+              'Desenvolvido por: Wesley Bastos, José Uilliam, Italo Juliano, Heloísa Cristovão e Daniely Teixeira ',
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black,
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Termos e Privacidade (se necessário)
-            Text(
+            const Text(
               'Ao usar este aplicativo, você concorda com nossos Termos de Serviço e Política de Privacidade.',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.black54,
               ),
             ),
-            Spacer(),
+            const Spacer(),
 
             // Botão para voltar
             Align(
-              alignment: Alignment.bottomCenter, // Alinha o botão no centro
+              alignment: Alignment.bottomCenter,
               child: SizedBox(
-                width: double.infinity, // Define a largura do botão como 100% da tela
+                width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 15),
+                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    backgroundColor: Color.fromARGB(255, 1, 127, 106), // Nova cor do botão
+                    backgroundColor:
+                        const Color.fromARGB(255, 1, 127, 106), // Cor verde
                   ),
                   onPressed: () {
                     Navigator.pop(context); // Volta para a tela anterior
                   },
-                  child: Text(
+                  child: const Text(
                     "Voltar",
                     style: TextStyle(
                       fontSize: 18,
@@ -126,8 +128,9 @@ class AboutScreen extends StatelessWidget {
 void main() {
   runApp(MaterialApp(
     initialRoute: '/about',
+    debugShowCheckedModeBanner: false,
     routes: {
-      '/about': (context) => AboutScreen(),
+      '/about': (context) => const AboutScreen(),
     },
   ));
 }

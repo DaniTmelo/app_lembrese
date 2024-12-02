@@ -1,192 +1,232 @@
+import 'package:app_lembrese/models/user.dart';
 import 'package:flutter/material.dart';
+import 'package:app_lembrese/controller/controller_user.dart';
 
 class ProfileScreen extends StatefulWidget {
+  final String userEmail; // Recebe o email do usuário atual
+
+  const ProfileScreen({super.key, required this.userEmail});
+
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Controladores para os campos de texto
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  bool _isChangingPassword = false; // Variável para saber se o usuário quer alterar a senha
-  bool _isChangingUsername = false; // Variável para saber se o usuário quer alterar o nome de usuário
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _userController = ControllerUser();
+
+  bool _isChangingPassword = false;
+  bool _isChangingUsername = false;
+
+  String _currentUsername = "Carregando...";
+  User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserInfo();
+  }
+
+  Future<void> _loadUserInfo() async {
+    try {
+      final response = await _userController.getUserByEmail(widget.userEmail);
+      if (response != null) {
+        setState(() {
+          _currentUsername = response['name'] ?? "Usuário";
+          user = User.fromMap(response);
+          _usernameController.text = _currentUsername;
+        });
+      } else {
+        setState(() {
+          _currentUsername = "Usuário não encontrado";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _currentUsername = "Erro ao carregar usuário";
+      });
+    }
+  }
+
+  Future<void> _saveProfile() async {
+    final newUsername = _usernameController.text.trim();
+    final newPassword = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (_isChangingUsername && newUsername.isEmpty) {
+      _showMessage("Por favor, preencha o nome de usuário.");
+      return;
+    }
+
+    if (_isChangingPassword) {
+      if (newPassword.isEmpty || confirmPassword.isEmpty) {
+        _showMessage("Por favor, preencha os campos de senha.");
+        return;
+      }
+      if (newPassword != confirmPassword) {
+        _showMessage("As senhas não coincidem.");
+        return;
+      }
+    }
+
+    try {
+      if (_isChangingUsername) {
+        await _userController.updateUser(
+          id: user?.id ?? 0,
+          email: widget.userEmail,
+          name: newUsername,
+        );
+      }
+      if (_isChangingPassword) {
+        await _userController.updateUser(
+          id: user?.id ?? 0,
+          email: widget.userEmail,
+          password: newPassword,
+        );
+      }
+      _showMessage("Perfil atualizado com sucesso!");
+      Navigator.pop(context);
+    } catch (e) {
+      _showMessage("Erro ao salvar alterações: $e");
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
   @override
   void dispose() {
-    // Limpa os controladores quando a tela for descartada
     _usernameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  void _saveProfile() {
-    String username = _usernameController.text.trim();
-    String password = _passwordController.text.trim();
-    String confirmPassword = _confirmPasswordController.text.trim();
-
-    // Validação de nome de usuário (opcional)
-    if (username.isEmpty && !_isChangingPassword && !_isChangingUsername) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Por favor, preencha o nome de usuário ou a senha.")),
-      );
-      return;
-    }
-
-    // Validação de senha apenas se o usuário quiser alterá-la
-    if (_isChangingPassword) {
-      if (password.isEmpty || confirmPassword.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Por favor, preencha os campos de nova senha.")),
-        );
-        return;
-      }
-
-      if (password != confirmPassword) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("As senhas não coincidem.")),
-        );
-        return;
-      }
-    }
-
-    // Simula o salvamento
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Perfil salvo com sucesso!")),
-    );
-
-    // Após salvar, volte para a tela de configurações
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Configurações",
+        title: const Text(
+          "Perfil",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: Color.fromARGB(255, 1, 127, 106),
-        iconTheme: IconThemeData(color: Colors.white), // Ícone de voltar branco
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 1, 127, 106),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Título alterado para "Perfil" e ajustado com espaçamento
-            SizedBox(height: 20), // Descer o título "Perfil"
-            Align(
-              alignment: Alignment.center,
-              child: Text(
-                "Perfil",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 20),
-
-            // Opção para alterar nome de usuário
-            Row(
-              children: [
-                Text(
-                  "Alterar Nome de Usuário",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 20),
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Editar Perfil",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-                Switch(
-                  value: _isChangingUsername,
-                  onChanged: (bool value) {
-                    setState(() {
-                      _isChangingUsername = value;
-                    });
-                  },
+              ),
+              const SizedBox(height: 20),
+
+              // Alterar Nome de Usuário
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Alterar Nome de Usuário",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Switch(
+                    value: _isChangingUsername,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _isChangingUsername = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              if (_isChangingUsername)
+                TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    hintText: "Novo nome de usuário",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 20),
+
+              // Alterar Senha
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Alterar Senha",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Switch(
+                    value: _isChangingPassword,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _isChangingPassword = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              if (_isChangingPassword) ...[
+                TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Nova senha",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: _confirmPasswordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Confirmar nova senha",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
                 ),
               ],
-            ),
-            SizedBox(height: 10),
+              const SizedBox(height: 20),
 
-            // Campo para alterar o nome de usuário, aparece somente se o Switch estiver ativado
-            if (_isChangingUsername) ...[
-              TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                  hintText: "Novo nome de usuário",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Bordas arredondadas
+              // Botão Salvar Alterações
+              ElevatedButton(
+                onPressed: _saveProfile,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
+                  backgroundColor: const Color.fromARGB(255, 1, 127, 106),
                 ),
-              ),
-              SizedBox(height: 20),
-            ],
-
-            // Opção para alterar senha
-            Row(
-              children: [
-                Text(
-                  "Alterar Senha",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Switch(
-                  value: _isChangingPassword,
-                  onChanged: (bool value) {
-                    setState(() {
-                      _isChangingPassword = value;
-                    });
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-
-            // Campos para redefinir a senha, apenas se o usuário quiser
-            if (_isChangingPassword) ...[
-              Text(
-                "Redefinir Senha",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Nova senha",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Bordas arredondadas
-                  ),
-                ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: _confirmPasswordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Confirmar nova senha",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Bordas arredondadas
-                  ),
+                child: const Text(
+                  "Salvar Alterações",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ],
-            SizedBox(height: 20),
-
-            // Botão para salvar as alterações
-            ElevatedButton(
-              onPressed: _saveProfile,
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                backgroundColor: Color.fromARGB(255, 1, 127, 106),
-              ),
-              child: Text(
-                "Salvar Alterações",
-                style: TextStyle(fontSize: 18, color: Colors.white),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

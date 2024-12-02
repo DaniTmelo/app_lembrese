@@ -1,0 +1,6 @@
+{
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "develop"
+    ],
+    "java.configuration.updateBuildConfiguration": "disabled"
+}

@@ -1,125 +1,120 @@
+import 'package:app_lembrese/controller/controller_user.dart';
+import 'package:app_lembrese/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'about_screen.dart'; // Import da tela "Sobre"
-import 'login_screen.dart'; // Import da tela "Login"
-import 'add_task_screen.dart'; // Import da tela "Adicionar Tarefa"
-import 'task_list_screen.dart'; // Import da tela "Lista de Tarefas"
-import 'settings_screen.dart'; // Import da tela "Configurações"
+import 'about_screen.dart';
+import 'login_screen.dart';
+import 'add_task_screen.dart';
+import 'task_list_screen.dart';
+import 'settings_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  final String userEmail;
+
+  const HomeScreen({super.key, required this.userEmail});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final _userController = ControllerUser();
+  String _userName = "Carregando...";
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    try {
+      final user = await _userController.getUserByEmail(widget.userEmail);
+      if (user != null) {
+        setState(() {
+          _userName = user['name'] ?? "Usuário";
+        });
+      } else {
+        setState(() {
+          _userName = "Usuário não encontrado";
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _userName = "Erro ao carregar nome";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
-        title: Row(
-          children: [
-            SizedBox(width: 10),
-            Text(
-              "Menu",
-              style: TextStyle(color: Colors.white), // Cor branca para "Menu"
-            ),
-          ],
-        ),
-        backgroundColor: Color.fromARGB(255, 1, 127, 106), // Cor verde para o AppBar
-        iconTheme: IconThemeData(color: Colors.white), // Cor branca para o ícone de três linhas
+        title: const Text("Menu", style: kWhiteTextStyle),
+        centerTitle: true,
+        backgroundColor: kPrimaryColor,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
         child: Container(
-          color: Color.fromARGB(255, 1, 127, 106), // Fundo verde do menu lateral
-          child: Column(
+          color: kPrimaryColor,
+          child: ListView(
             children: [
               UserAccountsDrawerHeader(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 1, 127, 106), // Fundo verde do cabeçalho
-                ),
-                accountName: Text(
-                  "Nome do cadastro",
-                  style: TextStyle(color: Colors.white),
-                ),
-                accountEmail: null, // Remove o email
-                currentAccountPicture: CircleAvatar(
+                decoration: const BoxDecoration(color: kPrimaryColor),
+                accountName: Text(_userName, style: kWhiteTextStyle),
+                accountEmail: Text(widget.userEmail, style: kWhiteTextStyle),
+                currentAccountPicture: const CircleAvatar(
                   backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.person,
-                    size: 40,
-                    color: Color.fromARGB(255, 1, 127, 106),
+                  child: Icon(Icons.person, size: 40, color: kPrimaryColor),
+                ),
+              ),
+              _buildDrawerItem(
+                title: "Definir Tarefas",
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddTaskScreen(),
                   ),
                 ),
               ),
-              Expanded(
-                child: ListView(
-                  children: [
-                    ListTile(
-                      title: Text(
-                        "Definir Tarefas",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AddTaskScreen()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text(
-                        "Tarefas do Dia",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TaskListScreen()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text(
-                        "Configurações",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SettingsScreen()),
-                        );
-                      },
-                    ),
-                    ListTile(
-                      title: Text(
-                        "Sobre",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AboutScreen()),
-                        );
-                      },
-                    ),
-                  ],
+              _buildDrawerItem(
+                title: "Tarefas do Dia",
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TaskListScreen()),
                 ),
               ),
-              Divider(color: Colors.white), // Linha divisória
-              ListTile(
-                title: Text(
-                  "Sair",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+              _buildDrawerItem(
+                title: "Configurações",
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        SettingsScreen(userEmail: widget.userEmail),
                   ),
                 ),
-                leading: Icon(Icons.exit_to_app, color: Colors.white),
-                onTap: () {
-                  // Navega para a tela de login
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                },
+              ),
+              _buildDrawerItem(
+                title: "Sobre",
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AboutScreen()),
+                ),
+              ),
+              const Divider(color: Colors.white),
+              _buildDrawerItem(
+                title: "Sair",
+                icon: Icons.exit_to_app,
+                titleStyle: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                onTap: () => Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                ),
               ),
             ],
           ),
@@ -128,119 +123,83 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              decoration: InputDecoration(
-                hintText: "Busque uma tarefa",
-                prefixIcon: Icon(Icons.search),
-                suffixIcon: GestureDetector(
-                  onTap: () => _selectDate(context),
-                  child: Icon(Icons.calendar_today),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Color(0xFFF0F0F0),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TaskListScreen()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                backgroundColor: Color.fromARGB(255, 1, 127, 106), // Cor verde do botão
-              ),
-              child: Text(
-                "Tarefas do dia",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            Column(
-              children: [
-                Text(
-                  "Escolha uma data para lembrar",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Color.fromARGB(255, 1, 127, 106), // Cor verde no texto
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 20),
-                Icon(
-                  Icons.calendar_today,
-                  size: 150,
-                  color: Color.fromARGB(255, 1, 127, 106), // Cor verde no ícone
-                ),
-                Text(
-                  "Lembre-se",
-                  style: TextStyle(
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 1, 127, 106), // Cor verde no texto
-                  ),
-                ),
-              ],
-            ),
-            Spacer(),
+            const SizedBox(height: 12),
             ElevatedButton.icon(
+              icon: const Icon(Icons.task_alt, color: Colors.white),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddTaskScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const TaskListScreen(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                backgroundColor: const Color.fromARGB(255, 1, 127, 106), // Cor verde do botão
+                backgroundColor: kPrimaryColor,
               ),
-              icon: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              label: Text(
-                "Adicionar tarefas",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+              label: const Text(
+                "Tarefas do Dia",
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             ),
-            SizedBox(height: 20),
+            const Spacer(),
+            const Icon(Icons.calendar_today, size: 150, color: kPrimaryColor),
+            const Text(
+              "Lembre-se",
+              style: TextStyle(
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                color: kPrimaryColor,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const Spacer(),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                backgroundColor: kPrimaryColor,
+              ),
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                "Adicionar tarefas",
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddTaskScreen()),
+                );
+              },
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
+  Widget _buildDrawerItem({
+    required String title,
+    required VoidCallback onTap,
+    IconData? icon,
+    TextStyle? titleStyle,
+  }) {
+    return ListTile(
+      title: Text(title, style: titleStyle ?? kWhiteTextStyle),
+      leading: icon != null ? Icon(icon, color: Colors.white) : null,
+      onTap: onTap,
     );
-    if (picked != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Data selecionada: ${picked.toLocal()}")),
-      );
-    }
   }
 }

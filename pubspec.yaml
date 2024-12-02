@@ -12,6 +12,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sqflite: ^2.4.1
+  path: any
+  provider: ^6.1.2
+  crypto: ^3.0.6
 
   # Adiciona o conjunto de ícones Cupertino para iOS
   cupertino_icons: ^1.0.8
@@ -30,7 +34,8 @@ flutter:
 
   # Adiciona os assets (imagens) ao projeto
   assets:
-    - lib/assets/logo.png  # Caminho para o logo do aplicativo. Ajuste conforme necessário
+    - lib/assets/logo_principal.png  # Caminho para o logo do aplicativo. Ajuste conforme necessário
+    - lib/assets/logo_principal_dark.png  # Caminho para o logo do aplicativo. Ajuste conforme necessário
     # Você pode adicionar mais imagens conforme necessário
     # - assets/outra_imagem.png
 
