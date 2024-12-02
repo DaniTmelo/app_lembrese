@@ -1,16 +1,23 @@
 # app_lembrese
 
-A new Flutter project.
+Para rodar o projeto, é necessário ter o flutter instalado.
+Instalar o flutter, acesse o site: https://flutter.dev/docs/get-started/install
 
-## Getting Started
+Após clonar o projeto no link https://github.com/DaniTmelo/app_lembrese.git, execute o comando: flutter pub get 
 
-This project is a starting point for a Flutter application.
+Para rodar o projeto, execute o comando: flutter run
 
-A few resources to get you started if this is your first Flutter project:
+Para rodar o projeto em um dispositivo físico, é necessário ter um dispositivo conectado via USB com modo desenvolvedor ativado e executar o comando: flutter run
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+*** Integrantes do projeto ***
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Wesley da Avilla Bastos - RA 12524233840 
+- Daniely Teixeira Oliveira Melo - RA 82419386 
+- Heloísa Cristovão da Silva - RA 122321753 
+- José Uilliam Maia Freitas - RA 722421696 
+- Italo Julian de Chiato - RA 822150228 
+
+App Lembrese esta publicado no link do github: https://github.com/DaniTmelo/app_lembrese.git   
+
+# Demo do App
+
